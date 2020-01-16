@@ -1,0 +1,4 @@
+for %%i in (*.MP4) do ( echo file %%~nxi ) >> input.txt
+C:\DEV\util\ffmpeg -f concat -i input.txt -c copy output.MP4
+del input.txt
+del cmd.bat
