@@ -23,23 +23,36 @@ files_names = [
     "GH021892.MP4",
     "GH031887.MP4",
     "GH031888.MP4",
+    "GH041892.MP4",  # second to last, changed position
     "GH031892.MP4",
     "GH041887.MP4",
-    "GH041892.MP4",
     "GH051892.MP4"
 ]
 
-
+# add files to a dictionary; key is video number; value - chapters
 file_dict = {}
 for f_name in files_names:
-    print(f_name, f_name[4:8])
-    elem = file_dict.get(f_name[4:8])
-    if elem is None:
-        file_dict[f_name[4:8]] = [f_name]
+    video_num = f_name[4:8]
+    # print(f_name, video_num)
+    f_list = file_dict.get(video_num)
+    if f_list is None:
+        file_dict[video_num] = [f_name]
     else:
-        elem.append(f_name)
+        f_list.append(f_name)
 
-# print(file_dict)
+# filter out entries containing a single video; sort chapters
+file_dict_filtered = file_dict.copy()  # shallow copy, but that's ok
+for video_num, f_list in file_dict.items():
+    if len(f_list) == 1:
+        del file_dict_filtered[video_num]
+    else:
+        file_dict_filtered[video_num].sort()
+
 
 pp = pprint.PrettyPrinter()
-pp.pprint(file_dict)
+# pp.pprint(file_dict)
+print()
+pp.pprint(file_dict_filtered)
+
+# TODO add file name check for type, format; avoid processing outpt or non-GoPro videos
+# TODO call ffmpg process
