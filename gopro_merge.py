@@ -1,9 +1,34 @@
 import pprint
+import subprocess
+import re
+
+
+def process_videos():
+    print("executing 1st")
+    # p = subprocess.run("dir", shell=True, capture_output=True)
+    p = subprocess.run("dir", shell=True, stdout=subprocess.PIPE, text=True)
+    print("returncode =", p.returncode)
+    # print("stdout =", p.stdout.decode())
+    print("stdout =", p.stdout)
+    # print("executing 2nd")
+    # subprocess.run("notepad")
+
+
+def check_name(file_name):
+    """check if file name matches GoPro file format using regexp"""
+    pattern = re.compile(r"^GH\d{6}\.MP4")
+    result = pattern.search(file_name)
+    if result:
+        return True
+    else:
+        return False
+
 
 files_names = [
-    # "wrong.mp3",
-    # "wrong2",
-    # "wrong3MP4",
+    "wrong.mp3",
+    "wrong2",
+    "wrong3MP4",
+    "GH011882.TXT",  # wrong ext
     "GH011882.MP4",
     "GH011883.MP4",
     "GH011884.MP4",
@@ -17,6 +42,7 @@ files_names = [
     "GH011892.MP4",
     "GH011893.MP4",
     "GH021885.MP4",
+    "GH021885.TXT",  # wrong ext
     "GH021886.MP4",
     "GH021887.MP4",
     "GH021888.MP4",
@@ -32,6 +58,8 @@ files_names = [
 # add files to a dictionary; key is video number; value - chapters
 file_dict = {}
 for f_name in files_names:
+    if not check_name(f_name):
+        continue
     video_num = f_name[4:8]
     # print(f_name, video_num)
     f_list = file_dict.get(video_num)
@@ -54,5 +82,7 @@ pp = pprint.PrettyPrinter()
 print()
 pp.pprint(file_dict_filtered)
 
-# TODO add file name check for type, format; avoid processing outpt or non-GoPro videos
 # TODO call ffmpg process
+
+
+# process_videos()
