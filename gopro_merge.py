@@ -1,88 +1,82 @@
+import os
 import pprint
-import subprocess
 import re
+import subprocess
 
 
-def process_videos():
-    print("executing 1st")
+def process_videos(chapter_info):
+    """
+    Call ffmpeg to merge video chapters
+    parameter cointains a tuple - (video number, file names)
+    """
+
+    print("Processing chapter_info:", chapter_info)
+
+    # preparing text file containing file list for merging (for ffmpeg)
+    video_list_file = os.path.join(
+        dir_video_files, chapter_info[0] + '_merge.txt')
+    with open(video_list_file, "w") as f:
+        for video_chapter in chapter_info[1]:
+            f.write(f"file {video_chapter}\n")
+
+    command = f"{ffmpeg_exe} -f concat -i {video_list_file} -c copy {dir_video_files}M_GH00{chapter_info[0]}.MP4"
+    print("command =", command)
     # p = subprocess.run("dir", shell=True, capture_output=True)
-    p = subprocess.run("dir", shell=True, stdout=subprocess.PIPE, text=True)
+    # p = subprocess.run("dir", shell=True, stdout=subprocess.PIPE, text=True)
+    p = subprocess.run(command, stdout=subprocess.PIPE, text=True)
     print("returncode =", p.returncode)
-    # print("stdout =", p.stdout.decode())
-    print("stdout =", p.stdout)
-    # print("executing 2nd")
-    # subprocess.run("notepad")
+    # print("stdout =", p.stdout)
+    os.remove(video_list_file)  # remove file list after merging
 
 
-def check_name(file_name):
-    """check if file name matches GoPro file format using regexp"""
-    pattern = re.compile(r"^GH\d{6}\.MP4")
-    result = pattern.search(file_name)
-    if result:
-        return True
-    else:
-        return False
+def get_chapter_structure(dir_video):
+    """
+    Scans top directory, detect chapters, populates dictionary with chapter data
+    key is video number; value - chapters
+    """
+
+    # get only top level dir info
+    dir_data_video_files = next(os.walk(dir_video))
+    list_video_files = dir_data_video_files[2]  # get file list
+    pattern = re.compile(r"^GH\d{6}\.MP4$")
+
+    # add files to a dictionary; key is video number; value - chapters
+    file_dict = {}
+    for f_name in list_video_files:
+        if not pattern.search(f_name):
+            # skip file if name does not match GoPro file format
+            continue
+        video_num = f_name[4:8]
+        # print(f_name, video_num)
+        f_list = file_dict.get(video_num)
+        if f_list is None:
+            file_dict[video_num] = [f_name]
+        else:
+            f_list.append(f_name)
+
+    # filter out entries containing a single video; sort chapters
+    file_dict_filtered = file_dict.copy()  # shallow copy, but that's ok
+    for video_num, f_list in file_dict.items():
+        if len(f_list) == 1:
+            del file_dict_filtered[video_num]
+        else:
+            file_dict_filtered[video_num].sort()
+    return file_dict_filtered
 
 
-files_names = [
-    "wrong.mp3",
-    "wrong2",
-    "wrong3MP4",
-    "GH011882.TXT",  # wrong ext
-    "GH011882.MP4",
-    "GH011883.MP4",
-    "GH011884.MP4",
-    "GH011885.MP4",
-    "GH011886.MP4",
-    "GH011887.MP4",
-    "GH011888.MP4",
-    "GH011889.MP4",
-    "GH011890.MP4",
-    "GH011891.MP4",
-    "GH011892.MP4",
-    "GH011893.MP4",
-    "GH021885.MP4",
-    "GH021885.TXT",  # wrong ext
-    "GH021886.MP4",
-    "GH021887.MP4",
-    "GH021888.MP4",
-    "GH021892.MP4",
-    "GH031887.MP4",
-    "GH031888.MP4",
-    "GH041892.MP4",  # second to last, changed position
-    "GH031892.MP4",
-    "GH041887.MP4",
-    "GH051892.MP4"
-]
+# constants
+dir_video_files = "./gopro_merge/SampleVideo/"
+ffmpeg_exe = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
+###
 
-# add files to a dictionary; key is video number; value - chapters
-file_dict = {}
-for f_name in files_names:
-    if not check_name(f_name):
-        continue
-    video_num = f_name[4:8]
-    # print(f_name, video_num)
-    f_list = file_dict.get(video_num)
-    if f_list is None:
-        file_dict[video_num] = [f_name]
-    else:
-        f_list.append(f_name)
-
-# filter out entries containing a single video; sort chapters
-file_dict_filtered = file_dict.copy()  # shallow copy, but that's ok
-for video_num, f_list in file_dict.items():
-    if len(f_list) == 1:
-        del file_dict_filtered[video_num]
-    else:
-        file_dict_filtered[video_num].sort()
-
-
+all_chapter_info = get_chapter_structure(dir_video_files)
 pp = pprint.PrettyPrinter()
-# pp.pprint(file_dict)
 print()
-pp.pprint(file_dict_filtered)
+pp.pprint(all_chapter_info)
+print()
+for chapter_info in all_chapter_info.items():
+    process_videos(chapter_info)
 
-# TODO call ffmpg process
-
-
-# process_videos()
+# TODO set merged file dates same as 1st chapter
+# TODO create file renamer to add datetime to file name
+# TODO process subdirectories
