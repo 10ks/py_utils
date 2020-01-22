@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 gopro_merge/SampleVideo
+.vscode/settings.json

@@ -69,6 +69,10 @@ dir_video_files = "./gopro_merge/SampleVideo/"
 ffmpeg_exe = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
 ###
 
+if not os.path.isdir(dir_video_files):
+    print("Directory not found:", dir_video_files)
+    exit()
+
 all_chapter_info = get_chapter_structure(dir_video_files)
 pp = pprint.PrettyPrinter()
 print()
