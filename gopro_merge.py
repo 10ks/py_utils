@@ -13,8 +13,7 @@ def process_videos(chapter_info):
     print("Processing chapter_info:", chapter_info)
 
     # preparing text file containing file list for merging (for ffmpeg)
-    video_list_file = os.path.join(
-        dir_video_files, chapter_info[0] + '_merge.txt')
+    video_list_file = os.path.join(dir_video_files, chapter_info[0] + "_merge.txt")
     with open(video_list_file, "w") as f:
         for video_chapter in chapter_info[1]:
             f.write(f"file {video_chapter}\n")
@@ -70,7 +69,7 @@ ffmpeg_exe = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
 ###
 
 if not os.path.isdir(dir_video_files):
-    print("Directory not found:", dir_video_files)
+    print(f"Directory not found: {dir_video_files}  Exiting.")
     exit()
 
 all_chapter_info = get_chapter_structure(dir_video_files)
@@ -78,8 +77,14 @@ pp = pprint.PrettyPrinter()
 print()
 pp.pprint(all_chapter_info)
 print()
+
+if len(all_chapter_info) == 0:
+    print(f"No GoPro chapters to process. Exiting.")
+    exit()
+
 for chapter_info in all_chapter_info.items():
     process_videos(chapter_info)
+print(f"Video processing is done.")
 
 # TODO set merged file dates same as 1st chapter
 # TODO create file renamer to add datetime to file name
