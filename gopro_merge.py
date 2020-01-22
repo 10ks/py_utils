@@ -13,12 +13,12 @@ def process_videos(chapter_info):
     print("Processing chapter_info:", chapter_info)
 
     # preparing text file containing file list for merging (for ffmpeg)
-    video_list_file = os.path.join(dir_video_files, chapter_info[0] + "_merge.txt")
+    video_list_file = os.path.join(DIR_VIDEO_FILES, chapter_info[0] + "_merge.txt")
     with open(video_list_file, "w") as f:
         for video_chapter in chapter_info[1]:
             f.write(f"file {video_chapter}\n")
 
-    command = f"{ffmpeg_exe} -f concat -i {video_list_file} -c copy {dir_video_files}M_GH00{chapter_info[0]}.MP4"
+    command = f"{FFMPEG_EXE} -f concat -i {video_list_file} -c copy {DIR_VIDEO_FILES}M_GH00{chapter_info[0]}.MP4"
     print("command =", command)
     # p = subprocess.run("dir", shell=True, capture_output=True)
     # p = subprocess.run("dir", shell=True, stdout=subprocess.PIPE, text=True)
@@ -64,15 +64,15 @@ def get_chapter_structure(dir_video):
 
 
 # constants
-dir_video_files = "./gopro_merge/SampleVideo/"
-ffmpeg_exe = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
+DIR_VIDEO_FILES = "./gopro_merge/SampleVideo/"
+FFMPEG_EXE = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
 ###
 
-if not os.path.isdir(dir_video_files):
-    print(f"Directory not found: {dir_video_files}  Exiting.")
+if not os.path.isdir(DIR_VIDEO_FILES):
+    print(f"Directory not found: {DIR_VIDEO_FILES}  Exiting.")
     exit()
 
-all_chapter_info = get_chapter_structure(dir_video_files)
+all_chapter_info = get_chapter_structure(DIR_VIDEO_FILES)
 pp = pprint.PrettyPrinter()
 print()
 pp.pprint(all_chapter_info)
