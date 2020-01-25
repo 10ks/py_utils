@@ -128,7 +128,6 @@ add_timestamps(DIR_VIDEO_FILES)
 
 print("Chapter merging script is finished.")
 
-# TODO create file renamer to add datetime to file name
 # TODO process subdirectories
 # TODO handle slashes
 # TODO add proper logging levels
