@@ -104,10 +104,15 @@ def add_timestamps(dir_video):
             os.rename(f_name, f"{f_time}_{f_name}")
 
 
-print("Starting chapter merging.")
+print("Starting chapter merging utility.")
 if not os.path.isdir(DIR_VIDEO_FILES):
     print(f"Directory not found: {DIR_VIDEO_FILES}  Exiting.")
     exit()
+
+if not os.path.isfile(FFMPEG_EXE):
+    print(f"ffmpeg not found: {FFMPEG_EXE}  Exiting.")
+    exit()
+
 
 all_chapter_info = get_chapter_structure(DIR_VIDEO_FILES)
 pp = pprint.PrettyPrinter()
@@ -122,7 +127,7 @@ if len(all_chapter_info) == 0:
 for chapter_info in all_chapter_info.items():
     process_videos(chapter_info)
 
-# files which still have GoPro file naming are the ones whic unprocessed
+# files which still have GoPro file naming are the ones which unprocessed
 # add creation date to filenames
 add_timestamps(DIR_VIDEO_FILES)
 
