@@ -7,9 +7,10 @@ import time
 # constants (DIR_VIDEO_FILES must end with a backslash)
 # DIR_VIDEO_FILES = "./gopro_merge/SampleVideo/"
 # DIR_VIDEO_FILES = "D:/GoProContent/2019_08_28/"
-DIR_VIDEO_FILES = "D:/GoProContent/2019_09_24_Turcija_Alanija/"
+DIR_VIDEO_FILES = "C:/Users/Aaa/Desktop/Carnikava"
+# DIR_VIDEO_FILES = "E:/DCIM/100GOPRO"
 # FFMPEG_EXE = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
-FFMPEG_EXE = "D:/GoProContent/big/ffmpeg.exe"
+FFMPEG_EXE = "C:/DEV/ffmpeg/bin/ffmpeg.exe"
 GOPRO_PATTERN = re.compile(r"^GH\d{6}\.MP4$")
 ###
 
