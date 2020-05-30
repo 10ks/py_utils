@@ -3,9 +3,9 @@ import os
 import csv
 
 
-DATA_DIR= "C:/DEV/PillData/fdm_dm_spl_release_human_rx_part1/prescription/xml_only/small_test_set"
+# DATA_DIR= "C:/DEV/PillData/fdm_dm_spl_release_human_rx_part1/prescription/xml_only/small_test_set"
 # DATA_DIR= "C:/DEV/PillData/fdm_dm_spl_release_human_rx_part1/prescription/xml_only/with_imprint"
-# DATA_DIR= "C:/DEV/PillData/full/xml_only/with_imprint"
+DATA_DIR= "C:/DEV/PillData/full/xml_only/with_imprint"
 FORMS_TO_PROCESS = {"C25158", "C42895", "C42896", "C42917", "C42902",
     "C42904", "C42916", "C42928", "C42936", "C42954", "C25394", "C42998",
     "C42893", "C124794", "C42897", "C60997", "C42905", "C42997", "C42910", 
@@ -70,15 +70,8 @@ def process_file(path):
     tree = ET.parse(path)
     root = tree.getroot()
     subjects = root.findall(".//{*}subject")
-
+    pill_list = []  # one file could contain info regarding many pills, hence the list
     for elem in subjects:
-        # print("-----")
-        # print(elem)
-        # print(f"tag={elem.tag}")
-        # print(f"text={elem.text}")
-        # print(f"attribs={elem.attrib}")
-        # print(f"shape={elem.attrib['displayName']}")
-
         form_code = get_form_code(elem)
         # print(f"form_code={form_code}")
         if form_code not in FORMS_TO_PROCESS:
@@ -90,12 +83,16 @@ def process_file(path):
             # if there's no imprint - don't process this subject
             continue
 
-        dummy = get_shape(elem)
-        dummy = get_color(elem)
-        dummy = get_size(elem)
-        dummy = get_unit(elem)
-        dummy = get_name(elem)
-        dummy = get_code(elem)
+        pill_info = {}
+        pill_info["code"] = get_code(elem).strip()
+        pill_info["name"] = get_name(elem).strip()
+        pill_info["imprint"] = imprint.strip()
+        pill_info["shape"] = get_shape(elem).strip().upper()
+        pill_info["color"] = get_color(elem).strip().upper()
+        pill_info["size"] = get_size(elem).strip()
+        pill_info["unit"] = get_unit(elem).strip().upper()
+        pill_info["xml_file"] = os.path.basename(path)
+        pill_list.append(pill_info)
         # print(f"imprint={imprint}")
         # print(f"shape={get_shape(elem)}")
         # print(f"color={get_color(elem)}")
@@ -103,26 +100,34 @@ def process_file(path):
         # print(f"unit={get_unit(elem)}")
         # print(f"name={get_name(elem)}")
         # print(f"code={get_code(elem)}")
+    return(pill_list)
 
-        
 # START ################
 dir_data_xml_files = next(os.walk(DATA_DIR))
 
-# with open("pills_from_xml.csv", "w") as csv_output:
-    
 counter = 0
-for file_name in dir_data_xml_files[2]:
-    # print(file_name)
-    full_path = os.path.join(dir_data_xml_files[0], file_name)
-    # print(full_path)
-    try:
-        process_file(full_path)
-    except Exception as e:
-        print(f"Error while processing {file_name}")
-        print(e)
+with open("pills_from_xml.csv", "w", newline="\n", encoding="utf-8") as csv_output_file:
+# with open("pills_from_xml.csv", "w", newline="") as csv_output_file:
+    fieldnames = ["code", "name", "imprint", "shape", "color", "size", "unit", "xml_file"]
+    csv_writer = csv.DictWriter(csv_output_file, fieldnames=fieldnames)
+    csv_writer.writeheader()
 
-    counter += 1
-    if counter%100 == 0:
-        print(counter) # display progress after next 100 files processed
+    
+    for file_name in dir_data_xml_files[2]:
+        # print(file_name)
+        full_path = os.path.join(dir_data_xml_files[0], file_name)
+        # print(full_path)
+        try:
+            pill_list = process_file(full_path)
+            # print(pill_list)
+            # for pill_info in pill_list:
+            csv_writer.writerows(pill_list)
+        except Exception as e:
+            print(f"Error while processing {file_name}")
+            print(e)
+
+        counter += 1
+        if counter%100 == 0:
+            print(counter) # display progress after next 100 files processed
         
 print(f"finished. processed {counter} files.")
