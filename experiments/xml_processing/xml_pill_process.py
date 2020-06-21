@@ -5,7 +5,7 @@ import csv
 
 # DATA_DIR= "C:/DEV/PillData/fdm_dm_spl_release_human_rx_part1/prescription/xml_only/small_test_set"
 # DATA_DIR= "C:/DEV/PillData/fdm_dm_spl_release_human_rx_part1/prescription/xml_only/with_imprint"
-DATA_DIR= "C:/DEV/PillData/full/xml_only/with_imprint"
+DATA_DIR= "C:/DEV/PillData/homeo_imprint"
 FORMS_TO_PROCESS = {"C25158", "C42895", "C42896", "C42917", "C42902",
     "C42904", "C42916", "C42928", "C42936", "C42954", "C25394", "C42998",
     "C42893", "C124794", "C42897", "C60997", "C42905", "C42997", "C42910", 
@@ -90,8 +90,9 @@ def process_file(path):
         pill_info["shape"] = get_shape(elem).strip().upper()
         pill_info["color"] = get_color(elem).strip().upper()
         pill_info["size"] = get_size(elem).strip()
-        pill_info["unit"] = get_unit(elem).strip().upper()
+        # pill_info["unit"] = get_unit(elem).strip().upper()
         pill_info["xml_file"] = os.path.basename(path)
+        pill_info["class"] = 3 # 1-prescription, 2=otc, 3=homeopatic, 4=custom(LV)
         pill_list.append(pill_info)
         # print(f"imprint={imprint}")
         # print(f"shape={get_shape(elem)}")
@@ -106,9 +107,10 @@ def process_file(path):
 dir_data_xml_files = next(os.walk(DATA_DIR))
 
 counter = 0
-with open("pills_from_xml.csv", "w", newline="\n", encoding="utf-8") as csv_output_file:
+with open("pills_homeo_from_xml3.csv", "w", newline="\n", encoding="utf-8") as csv_output_file:
 # with open("pills_from_xml.csv", "w", newline="") as csv_output_file:
-    fieldnames = ["code", "name", "imprint", "shape", "color", "size", "unit", "xml_file"]
+    # fieldnames = ["code", "name", "imprint", "shape", "color", "size", "unit", "xml_file", "class"]
+    fieldnames = ["code", "name", "imprint", "shape", "color", "size", "xml_file", "class"]
     csv_writer = csv.DictWriter(csv_output_file, fieldnames=fieldnames)
     csv_writer.writeheader()
 

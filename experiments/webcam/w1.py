@@ -6,6 +6,7 @@ import numpy as np
 
 # https://docs.opencv.org/4.2.0/d7/dfc/group__highgui.html
 
+INITIAL_FOCUS = 38
 
 # def white_balance(img):
 #     result = cv.cvtColor(img, cv.COLOR_BGR2LAB)
@@ -58,7 +59,8 @@ def setup_ui():
     cv.moveWindow("b", 680, 300)
 
     cv.namedWindow("controls")
-    cv.createTrackbar("focus", "controls", int(vc.get(cv.CAP_PROP_FOCUS)), 40, callback_focus)
+    # cv.createTrackbar("focus", "controls", int(vc.get(cv.CAP_PROP_FOCUS)), 40, callback_focus)
+    cv.createTrackbar("focus", "controls", INITIAL_FOCUS, 40, callback_focus)
     cv.createTrackbar("a_inc", "controls", 0, 255, callback_a_inc)
     cv.createTrackbar("b_inc", "controls", 0, 255, callback_b_inc)
 
@@ -66,7 +68,7 @@ a_inc = 0
 b_inc = 0
 
 # initialize the camera
-vc = cv.VideoCapture(1)
+vc = cv.VideoCapture(0)
 
 # Tested resolutions: 160x120 320x240 640x480 800x600 1280x720 (with black side bars)
 # vc.set(cv.CAP_PROP_FRAME_WIDTH, 1280) # set the Horizontal resolution
@@ -84,11 +86,11 @@ vc.set(cv.CAP_PROP_AUTOFOCUS, 0) # turn the autofocus off
 # (resolution should be already set and autofocus disabled)
 _, _ = vc.read()
 time.sleep(0.2)
-vc.set(cv.CAP_PROP_FOCUS, 38) # closest focus value is 40
+vc.set(cv.CAP_PROP_FOCUS, INITIAL_FOCUS) # closest focus value is 40
 
 vc.set(cv.CAP_PROP_AUTO_EXPOSURE, 1)
-# vc.set(cv.CAP_PROP_TEMPERATURE, 5500) #  WB for transparent glass
-vc.set(cv.CAP_PROP_TEMPERATURE, 2800) #  minimum WB - for yellow glass
+vc.set(cv.CAP_PROP_TEMPERATURE, 5500) #  WB for transparent glass
+# vc.set(cv.CAP_PROP_TEMPERATURE, 2800) #  minimum WB - for yellow glass
 # print(vc.get(cv.CAP_PROP_TEMPERATURE))
 # vc.set(cv.CV_CAP_PROP_SETTINGS, 0)
 

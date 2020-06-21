@@ -7,8 +7,11 @@ import time
 # constants (DIR_VIDEO_FILES must end with a backslash)
 # DIR_VIDEO_FILES = "./gopro_merge/SampleVideo/"
 # DIR_VIDEO_FILES = "D:/GoProContent/2019_08_28/"
-DIR_VIDEO_FILES = "C:/Users/Aaa/Desktop/Carnikava"
-# DIR_VIDEO_FILES = "E:/DCIM/100GOPRO"
+# DIR_VIDEO_FILES = "C:/Users/Aaa/Desktop/Video/Murjani 2020_05_23/"
+# DIR_VIDEO_FILES = "E:/DCIM/100GOPRO/26/"
+DIR_VIDEO_FILES = "E:/DCIM/100GOPRO/"
+DIR_OUTPUT = "" # if empty then files are merged in the same dir as originals
+# DIR_OUTPUT = "C:/DEV/VideoMerge/" # if empty then files are merged in the same dir as originals
 # FFMPEG_EXE = "C:/DEV/GIT_Repos/py_utils/gopro_merge/SampleVideo/ffmpeg.exe"
 FFMPEG_EXE = "C:/DEV/ffmpeg/bin/ffmpeg.exe"
 GOPRO_PATTERN = re.compile(r"^GH\d{6}\.MP4$")
@@ -43,7 +46,7 @@ def process_videos(chapter_info):
         for video_chapter in chapter_info[1]:
             f.write(f"file {video_chapter}\n")
 
-    command = f"{FFMPEG_EXE} -f concat -i {video_list_file} -c copy {output_file}"
+    command = f"{FFMPEG_EXE} -f concat -i {video_list_file} -c copy {DIR_OUTPUT}{output_file}"
     print("command =", command)
     # p = subprocess.run("dir", shell=True, capture_output=True)
     # p = subprocess.run("dir", shell=True, stdout=subprocess.PIPE, text=True)
@@ -137,3 +140,4 @@ print("Chapter merging script is finished.")
 # TODO process subdirectories
 # TODO handle slashes
 # TODO add proper logging levels
+# TODO prevent renaming of videos if processing stopped due to lack of disk space
